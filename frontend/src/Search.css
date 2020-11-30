@@ -1,0 +1,79 @@
+/* https://www.w3schools.com/css/css_dropdowns.asp */
+
+.dropdown-button, .search-button {
+  background-color: #2e23ad;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+}
+
+.search-button {
+  background-color: #2e23ad;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+}
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content button {
+  color: black;
+  background-color: #f9f9f9;
+  padding: 12px 16px;
+  text-decoration: none;
+  border: none;
+  border-radius: 0px;
+  display: block;
+  cursor: pointer;
+  width: 100%;
+}
+
+.dropdown-content button:hover {
+  background-color: #B7B0FF
+}
+
+.dropdown-content button:focus {
+  outline: none
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropdown-button {
+  background-color: #2e23ad;
+}
+
+.search-bar {
+  border: none;
+  font-size: 16px;
+  padding: 16px;
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+}

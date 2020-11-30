@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+.app {
+  margin: 24px;
+}
+
+/* https://www.w3schools.com/css/css_rwd_mediaqueries.asp and https://material-ui.com/customization/breakpoints/*/
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .app { width: 90%; }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .app { width: 85%; }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 960px) {
+  .app { width: 60%; }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 1280px) {
+  .app { width: 40%; }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1920px) {
+  .app { width: 30%; }
+}
+
+.search {
+  margin-bottom: 24px;
+}
+
+body {
+  background-color: #F9F9F9;
+}
+
+h1 {
+  font-size: 64px;
+  color: #2e23ad;
+  margin: 24px 0px;
+  font-weight: 500;
+}
+
+#clear-button {
+  margin-left: 16px;
+  background-color: #1ad4e0;
+  color: white;
+  padding: 8px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+}
+
+#new-post-button {
+  background-color: #1ad4e0;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+}

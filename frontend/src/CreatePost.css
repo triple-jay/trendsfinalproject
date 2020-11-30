@@ -1,0 +1,58 @@
+h1 {
+  font-size: 48px;
+  font-weight: bold;
+  color: #2e23ad;
+  margin: 0px;
+}
+
+h2 {
+  font-size: 30px;
+  font-weight: normal; 
+}
+
+.input-box {
+  border: none;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  resize: vertical;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+#add-tag-button {
+  background-color: #2e23ad;
+  color: white;
+  padding: 16px;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+}
+
+#create-button {
+  background-color: #2e23ad;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+}
+
+#cancel-button {
+  background-color: #333;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+}
