@@ -5,11 +5,13 @@ import './CreatePost.css';
 import TextareaAutosize from 'react-textarea-autosize';
 import TagDeletable from './TagDeletable';
 import Post, { PostProps } from './Post';
+import 'firebase/auth';
+import firebase from 'firebase/app';
 
 type CreatePostProps = {
-  isOpen: boolean;
-  setOpen: (open: boolean) => void;
-  addPost: (post: PostProps) => void;
+  isOpen: boolean,
+  setOpen: (open: boolean) => void,
+  addPost: (post: PostProps) => void
 }
 const CreatePost = ({ isOpen, setOpen, addPost }: CreatePostProps) => {
   const [title, setTitle] = useState('');

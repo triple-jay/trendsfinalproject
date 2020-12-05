@@ -47,7 +47,7 @@ const Authenticated = () => {
 
   const login = (email: string, password: string) => {
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((user) => {
+      .then((userCreds) => {
 
       })
       .catch((error) => {
