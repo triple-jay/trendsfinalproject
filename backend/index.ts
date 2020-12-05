@@ -1,5 +1,7 @@
 import admin from 'firebase-admin';
 import express from 'express';
+import path from 'path';
+import cors from 'cors';
 
 const serviceAccount = require('./service-account.json');
 
@@ -8,11 +10,11 @@ admin.initializeApp({
     databaseURL: "https://cublogs-ffa92.firebaseio.com"
 });
 
-const db = admin.firestore();
-
 const app = express();
+app.use(cors());
+//app.use(express.static(path.join(__dirname, '../frontend/build')));
 app.use(express.json());
-
+const db = admin.firestore();
 
 type Post = {
     title: string;
@@ -37,15 +39,19 @@ type FirebasePost = {
 }
 
 type User = {
-    name: string;
-    upvotePosts: string[];
+    firstName: string;
+    lastName: string;
+    upvotedPostIDs: string[];
+    downvotedPostIDs: string[];
+    postIDs: string[];
 }
 
 type UserWithID = User & {
-    userid: string;
+    uid: string;
 }
 
 const postsCollection = db.collection('posts');
+const usersCollection = db.collection('users');
 
 app.get('/getPosts', async (req, res) => {
     const postDocs = await postsCollection.get();
@@ -72,6 +78,19 @@ app.post('/post/:id', async (req, res) => {
     const id = req.params.id;
     const updatedPost = req.body;
     await postsCollection.doc(id).update(updatedPost);
+});
+
+app.post('/createUser', async (req, res) => {
+    const { uid, firstName, lastName } = req.body;
+    const firebaseUser = {
+        firstName: firstName,
+        lastName: lastName,
+        upvotedPostIDs: [],
+        downvotedPostIDs: [],
+        postIDs: []
+    }
+    await usersCollection.doc(uid as string).set(firebaseUser);
+    res.send(uid);
 });
 
 app.listen(8080, () => console.log('Server started!'));

@@ -38,7 +38,9 @@ const Posts = () => {
   useEffect(() => getPosts(), []);
 
   const addPost = (post: PostProps) => {
-    axios.post('/createPost', post).then(res => res.data).then(id => setPosts([...posts, { ...post, id }]));
+    axios.post('/createPost', post)
+      .then(res => res.data)
+      .then(id => setPosts([...posts, { ...post, id }]));
   }
 
   const filterPosts = () => {
