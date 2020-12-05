@@ -51,7 +51,7 @@ const Post = ({ title, author, dateTime, body, tags, upvotes, canInteract }: Pos
 
   return <Card style={{ padding: 24, borderRadius: 20, marginBottom: 24 }}>
     <h2 id="post-title">{title}</h2>
-    <em id="post-info">Posted by <strong>{author}</strong> on <strong>{dateTime.toString()}</strong> at <strong>{dateTime.toString()}</strong></em>
+    <em id="post-info">Posted by <strong>{author}</strong> on <strong>{new Date(dateTime).toLocaleDateString("en-US", dateOptions)}</strong> at <strong>{new Date(dateTime).toLocaleTimeString("en-US", timeOptions)}</strong></em>
     <p id="post-body">{body}</p>
     <Grid
       container
@@ -60,7 +60,7 @@ const Post = ({ title, author, dateTime, body, tags, upvotes, canInteract }: Pos
       alignItems="center"
     >
       <Grid item xs={12} sm={6} md={7} lg={9}>
-        {tags.map((tag) => <TagButton tag={tag} enabled={canInteract} />)}
+        {tags.map((tag) => <TagButton key={tag} tag={tag} enabled={canInteract} />)}
       </Grid>
       <Grid item container xs={12} sm={6} md={5} lg={3} justify="space-around" alignItems="center">
         <Grid item>

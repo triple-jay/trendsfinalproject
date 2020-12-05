@@ -8,23 +8,23 @@ import CreatePost from './CreatePost';
 import axios from 'axios';
 
 const theme = createMuiTheme({
-    palette: {
-      primary: {
-        main: '#2e23ad',
-      },
-      secondary: {
-        main: '#1ad4e0',
-      },
+  palette: {
+    primary: {
+      main: '#2e23ad',
     },
-  });
+    secondary: {
+      main: '#1ad4e0',
+    },
+  },
+});
 
 
 type PostWithID = PostProps & {
-    id: string;
+  id: string;
 }
 
 const Posts = () => {
-    const [filterType, setFilterType] = useState<SearchType>('None');
+  const [filterType, setFilterType] = useState<SearchType>('None');
   const [filterInput, setFilterInput] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
@@ -38,7 +38,7 @@ const Posts = () => {
   useEffect(() => getPosts(), []);
 
   const addPost = (post: PostProps) => {
-    axios.post('/createPost', post).then(res => res.data).then(id => setPosts([...posts, {...post, id}]));
+    axios.post('/createPost', post).then(res => res.data).then(id => setPosts([...posts, { ...post, id }]));
   }
 
   const filterPosts = () => {
@@ -80,7 +80,7 @@ const Posts = () => {
             : <p>Viewing all posts</p>}
         </div>
         <div className="posts">
-          {filterPosts().map((post) => <Post {...post} />)}
+          {filterPosts().map((post) => <Post key={post.id} {...post} canInteract={true} />)}
         </div>
       </div>
       <CreatePost isOpen={createDialogOpen} setOpen={setCreateDialogOpen} addPost={addPost}></CreatePost>

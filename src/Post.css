@@ -1,0 +1,26 @@
+.post-card {
+  padding: 24px;
+  border-radius: 20px;
+  width: 40%;
+  margin-bottom: 24px;
+}
+
+.post-info {
+  font-size: 16px;
+}
+
+.post-body {
+  font-size: 14px;
+}
+
+.num-upvotes {
+  font-size: 16px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0px;
+  font-size: 36px;
+}
+
+
