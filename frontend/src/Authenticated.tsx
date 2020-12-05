@@ -20,12 +20,27 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+type User = {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  upvotedPostIDs: string[];
+  downvotedPostIDs: string[];
+  postIDs: string[];
+}
+
 const Authenticated = () => {
-  const [user, setUser] = useState<firebase.User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   function onAuthStateChange() {
-    return firebase.auth().onAuthStateChanged((user) => {
-      setUser(user);
+    return firebase.auth().onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser !== null) {
+        const user = await axios.get<User>('/getUser/' + firebaseUser.uid);
+        setUser(user.data);
+      }
+      else {
+        setUser(null);
+      }
     });
   }
 
@@ -47,7 +62,12 @@ const Authenticated = () => {
 
   const login = (email: string, password: string) => {
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((userCreds) => {
+      .then(async (userCreds) => {
+        if (userCreds.user !== null) {
+          const user = await axios.get<User>('/getUser/' + userCreds.user.uid);
+          setUser(user.data);
+          console.log(user.data);
+        }
 
       })
       .catch((error) => {
@@ -57,7 +77,7 @@ const Authenticated = () => {
 
   return (
     <div>
-      {user && <Posts />}
+      {user && <Posts {...user} />}
       {!user && <Switch>
         <Route path="/signup">
           <SignUp callback={signup} />
@@ -71,3 +91,4 @@ const Authenticated = () => {
 }
 
 export default Authenticated;
+export type { User };

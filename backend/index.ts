@@ -39,15 +39,12 @@ type FirebasePost = {
 }
 
 type User = {
+    uid: string;
     firstName: string;
     lastName: string;
     upvotedPostIDs: string[];
     downvotedPostIDs: string[];
     postIDs: string[];
-}
-
-type UserWithID = User & {
-    uid: string;
 }
 
 const postsCollection = db.collection('posts');
@@ -91,6 +88,14 @@ app.post('/createUser', async (req, res) => {
     }
     await usersCollection.doc(uid as string).set(firebaseUser);
     res.send(uid);
+});
+
+app.get('/getUser/:uid', async (req, res) => {
+    const uid = req.params.uid;
+    const userDoc = await usersCollection.doc(uid).get();
+    const user = userDoc.data;
+    res.send({ ...user, uid });
+    console.log({ ...user, uid });
 });
 
 app.listen(8080, () => console.log('Server started!'));

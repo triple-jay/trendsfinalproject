@@ -6,14 +6,15 @@ import TextareaAutosize from 'react-textarea-autosize';
 import TagDeletable from './TagDeletable';
 import Post, { PostProps } from './Post';
 import 'firebase/auth';
-import firebase from 'firebase/app';
+import { User } from './Authenticated';
 
 type CreatePostProps = {
   isOpen: boolean,
   setOpen: (open: boolean) => void,
-  addPost: (post: PostProps) => void
+  addPost: (post: PostProps) => void,
+  user: User
 }
-const CreatePost = ({ isOpen, setOpen, addPost }: CreatePostProps) => {
+const CreatePost = ({ isOpen, setOpen, addPost, user }: CreatePostProps) => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -53,7 +54,7 @@ const CreatePost = ({ isOpen, setOpen, addPost }: CreatePostProps) => {
 
   const postInfo = {
     title: title,
-    author: "Jeremy Jung",
+    author: user.firstName + ' ' + user.lastName,
     dateTime: new Date(),
     body: body,
     tags: tags,

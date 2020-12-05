@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import CreatePost from './CreatePost';
 import axios from 'axios';
 import firebase from 'firebase';
+import { User } from './Authenticated';
 
 const theme = createMuiTheme({
   palette: {
@@ -24,7 +25,7 @@ type PostWithID = PostProps & {
   id: string;
 }
 
-const Posts = () => {
+const Posts = (user: User) => {
   const [filterType, setFilterType] = useState<SearchType>('None');
   const [filterInput, setFilterInput] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -93,7 +94,7 @@ const Posts = () => {
           {filterPosts().map((post) => <Post key={post.id} {...post} canInteract={true} />)}
         </div>
       </div>
-      <CreatePost isOpen={createDialogOpen} setOpen={setCreateDialogOpen} addPost={addPost}></CreatePost>
+      <CreatePost isOpen={createDialogOpen} setOpen={setCreateDialogOpen} addPost={addPost} user={user}></CreatePost>
     </ThemeProvider>
   );
 }
