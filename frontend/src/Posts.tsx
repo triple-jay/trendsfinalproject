@@ -34,12 +34,10 @@ const Posts = (user: User) => {
 
   const getPosts: () => void = async () => {
     const posts = await axios.get<PostWithID[]>('/getPosts');
-    setPosts(posts.data.map((post) => {
-      return ({ ...post, user, canInteract: true });
-    }));
+    setPosts(posts.data.map((post) => ({ ...post, user, canInteract: true })));
   }
 
-  useEffect(() => getPosts(), []);
+  useEffect(() => getPosts());
 
   const addPost = (post: PostProps) => {
     const { authorName, canInteract, ...postInfo } = post;
@@ -57,6 +55,8 @@ const Posts = (user: User) => {
       case ('Keyword'): return posts.filter((post) => post.body.toLowerCase().includes(lowercaseInput));
       case ('Author'): return posts.filter((post) => post.authorName.toLowerCase().includes(lowercaseInput));
       case ('Tag'): return posts.filter((post) => post.tags.map((tag) => tag.toLowerCase()).includes(lowercaseInput));
+      case ('Upvoted'): return posts.filter((post) => user.upvotedPostIDs.includes(post.id));
+      case ('Downvoted'): return posts.filter((post) => user.downvotedPostIDs.includes(post.id));
       default: return posts;
     }
   }
@@ -86,9 +86,9 @@ const Posts = (user: User) => {
         </Grid>
         <div className="search">
           <Search setFilterType={(newType: SearchType) => setFilterType(newType)} setFilterInput={(newInput: string) => setFilterInput(newInput)}></Search>
-          {filterInput ?
+          {filterInput || filterType === "Upvoted" || filterType === "Downvoted" ?
             <div>
-              <p style={{ display: "inline-block" }}>{`Filtered by ${filterType.toLowerCase()} "${filterInput}"`}</p>
+              <p style={{ display: "inline-block" }}>{"Filtered by " + (filterType === "Upvoted" || filterType === "Downvoted" ? "posts you've " + filterType.toLowerCase() : filterType.toLowerCase() + ": " + filterInput)}</p>
               <p style={{ display: "inline-block" }} id="clear-button" onClick={clearFilter}>Clear filter</p>
             </div>
             : <p>Viewing all posts</p>}

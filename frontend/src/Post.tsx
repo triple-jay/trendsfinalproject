@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Card from '@material-ui/core/Card';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -34,6 +34,7 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
   const [upvoted, setUpvoted] = useState(user.upvotedPostIDs ? user.upvotedPostIDs.includes(id as string) : false);
   const [downvoted, setDownvoted] = useState(user.downvotedPostIDs ? user.downvotedPostIDs.includes(id as string) : false);
   const [numUpvotes, setNumUpvotes] = useState(upvotes);
+  const [disableVote, setDisableVote] = useState(false);
 
   const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   const timeOptions = { hour: 'numeric', minute: 'numeric' };
@@ -49,9 +50,13 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
   const upvote = () => {
     setDownvoted(false);
     setUpvoted(!upvoted);
+    setDisableVote(true);
     axios.post(`/upvotePost?uid=${user.uid}&postid=${id}`)
       .then(res => res.data)
-      .then(data => setNumUpvotes(numUpvotes + data.change))
+      .then(data => {
+        setNumUpvotes(numUpvotes + data.change);
+        setDisableVote(false);
+      })
       .catch((error) => {
         console.log(error.message);
       });
@@ -60,9 +65,13 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
   const downvote = () => {
     setUpvoted(false);
     setDownvoted(!downvoted);
+    setDisableVote(true);
     axios.post(`/downvotePost?uid=${user.uid}&postid=${id}`)
       .then(res => res.data)
-      .then(data => setNumUpvotes(numUpvotes + data.change))
+      .then(data => {
+        setNumUpvotes(numUpvotes + data.change);
+        setDisableVote(false);
+      })
       .catch((error) => {
         console.log(error.message);
       });
@@ -83,7 +92,7 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
       </Grid>
       <Grid item container xs={12} sm={6} md={5} lg={3} justify="space-around" alignItems="center">
         <Grid item>
-          <IconButton aria-label="downvote" onClick={downvote} color={downvoted ? "secondary" : "default"} disabled={!canInteract}>
+          <IconButton aria-label="downvote" onClick={downvote} color={downvoted ? "secondary" : "default"} disabled={!canInteract || disableVote}>
             <ArrowDropDownIcon fontSize="large" />
           </IconButton>
         </Grid>
@@ -91,7 +100,7 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
           <p id="num-upvotes">{numUpvotes}</p>
         </Grid>
         <Grid item>
-          <IconButton aria-label="upvote" onClick={upvote} color={upvoted ? "secondary" : "default"} disabled={!canInteract}>
+          <IconButton aria-label="upvote" onClick={upvote} color={upvoted ? "secondary" : "default"} disabled={!canInteract || disableVote}>
             <ArrowDropUpIcon fontSize="large" />
           </IconButton>
         </Grid>
