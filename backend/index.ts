@@ -17,11 +17,11 @@ app.use(express.json());
 const db = admin.firestore();
 
 type Post = {
-    title: string;
-    author: string;
-    dateTime: Date;
+    authorName: string;
     body: string;
+    dateTime: Date;
     tags: string[];
+    title: string;
     upvotes: number;
 }
 
@@ -30,43 +30,55 @@ type PostWithID = Post & {
 }
 
 type FirebasePost = {
-    title: string;
-    author: string;
-    dateTime: admin.firestore.Timestamp;
+    authorID: string;
     body: string;
+    dateTime: admin.firestore.Timestamp;
     tags: string[];
+    title: string;
     upvotes: number;
 }
 
-type User = {
-    uid: string;
+type FirebaseUser = {
+    downvotedPostIDs: string[];
     firstName: string;
     lastName: string;
-    upvotedPostIDs: string[];
-    downvotedPostIDs: string[];
     postIDs: string[];
+    upvotedPostIDs: string[];
+}
+
+type User = FirebaseUser & {
+    uid: string;
 }
 
 const postsCollection = db.collection('posts');
 const usersCollection = db.collection('users');
 
 app.get('/getPosts', async (req, res) => {
-    const postDocs = await postsCollection.get();
-    const posts = postDocs.docs.map((doc) => {
+    const postDocs = await postsCollection.orderBy('dateTime', 'desc').get();
+    const posts = postDocs.docs.map(async (doc) => {
         const firebasePost: FirebasePost = doc.data() as FirebasePost;
+        const { authorID, ...postInfo } = firebasePost;
+
+        // retrieve author name
+        const authorDoc = await usersCollection.doc(authorID).get();
+        const author = authorDoc.data() as FirebaseUser;
+        const authorName = author.firstName + ' ' + author.lastName;
+
+        // convert Firebase Timestamp to JavaScript Date
         const timestamp: admin.firestore.Timestamp = firebasePost.dateTime;
-        const post: Post = { ...firebasePost, dateTime: timestamp.toDate() };
-        const postWithID: PostWithID = { ...post, id: doc.id };
-        return postWithID;
+
+        const post: PostWithID = { ...postInfo, authorName: authorName, dateTime: timestamp.toDate(), id: doc.id };
+        return post;
     });
-    res.send(posts);
+    res.send(await Promise.all(posts));
 });
 
 app.post('/createPost', async (req, res) => {
-    const post = req.body as Post;
+    const { user, ...post } = req.body;
+    const authorID: string = user.uid;
     const seconds: number = Math.round(new Date(post.dateTime).getTime() / 1000);
     const timestamp: admin.firestore.Timestamp = new admin.firestore.Timestamp(seconds, 0);
-    const firebasePost: FirebasePost = { ...post, dateTime: timestamp };
+    const firebasePost: FirebasePost = { ...post, authorID: authorID, dateTime: timestamp } as FirebasePost;
     const newPost = await postsCollection.add(firebasePost);
     res.send(newPost.id);
 });
@@ -98,15 +110,15 @@ app.get('/getUser/', async (req, res) => {
 });
 
 app.post('/downvotePost', async (req, res) => {
-    let change: number = 0
+    let change: number = 0;
     const uid = req.query.uid as string;
     const postid = req.query.postid as string;
     const userDoc = await usersCollection.doc(uid).get();
     const user = userDoc.data() as User;
-    const upvotedPosts = user.upvotedPostIDs;
-    const downvotedPosts = user.downvotedPostIDs;
-    const postIndex = downvotedPosts ? downvotedPosts.findIndex(id => postid === id) : -1;
-    const removeFromIndex = upvotedPosts ? upvotedPosts.findIndex(id => postid === id) : -1;
+    let upvotedPosts = user.upvotedPostIDs;
+    let downvotedPosts = user.downvotedPostIDs;
+    const postIndex = downvotedPosts.indexOf(postid);
+    const removeFromIndex = upvotedPosts.indexOf(postid);
     if (postIndex !== -1) {
         downvotedPosts.splice(postIndex, 1);
         change += 1;
@@ -119,8 +131,11 @@ app.post('/downvotePost', async (req, res) => {
         };
     }
     const update = { downvotedPostIDs: downvotedPosts, upvotedPostIDs: upvotedPosts }
-    await usersCollection.doc(uid as string).update(update);
-    res.send(change);
+    await usersCollection.doc(uid).update(update).catch((err) => console.log(err));
+    const postDoc = await postsCollection.doc(postid).get();
+    const post: FirebasePost = postDoc.data() as FirebasePost;
+    await postsCollection.doc(postid).update({ upvotes: post.upvotes + change });
+    res.send({ change: change });
 });
 
 app.post('/upvotePost', async (req, res) => {
@@ -129,10 +144,10 @@ app.post('/upvotePost', async (req, res) => {
     const postid = req.query.postid as string;
     const userDoc = await usersCollection.doc(uid).get();
     const user = userDoc.data() as User;
-    const upvotedPosts = user.upvotedPostIDs;
-    const downvotedPosts = user.downvotedPostIDs;
-    const postIndex = upvotedPosts ? upvotedPosts.findIndex(id => postid === id) : -1;
-    const removeFromIndex = downvotedPosts ? downvotedPosts.findIndex(id => postid === id) : -1;
+    let upvotedPosts = user.upvotedPostIDs;
+    let downvotedPosts = user.downvotedPostIDs;
+    const postIndex = upvotedPosts.indexOf(postid);
+    const removeFromIndex = downvotedPosts.indexOf(postid);
     if (postIndex !== -1) {
         upvotedPosts.splice(postIndex, 1);
         change -= 1;
@@ -145,8 +160,11 @@ app.post('/upvotePost', async (req, res) => {
         };
     }
     const update = { downvotedPostIDs: downvotedPosts, upvotedPostIDs: upvotedPosts }
-    await usersCollection.doc(uid as string).update(update);
-    res.send(change);
+    await usersCollection.doc(uid).update(update).catch((err) => console.log(err));
+    const postDoc = await postsCollection.doc(postid).get();
+    const post: FirebasePost = postDoc.data() as FirebasePost;
+    await postsCollection.doc(postid).update({ upvotes: post.upvotes + change });
+    res.send({ change: change });
 });
 
 app.listen(8080, () => console.log('Server started!'));

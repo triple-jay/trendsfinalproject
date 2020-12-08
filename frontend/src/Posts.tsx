@@ -34,15 +34,18 @@ const Posts = (user: User) => {
 
   const getPosts: () => void = async () => {
     const posts = await axios.get<PostWithID[]>('/getPosts');
-    setPosts(posts.data);
+    setPosts(posts.data.map((post) => {
+      return ({ ...post, user, canInteract: true });
+    }));
   }
 
   useEffect(() => getPosts(), []);
 
   const addPost = (post: PostProps) => {
-    axios.post('/createPost', post)
+    const { authorName, canInteract, ...postInfo } = post;
+    axios.post('/createPost', postInfo)
       .then(res => res.data)
-      .then(id => setPosts([...posts, { ...post, id }]));
+      .then(id => setPosts([...posts, { ...post, id, user, canInteract: true }]));
   }
 
   const filterPosts = () => {
@@ -52,7 +55,7 @@ const Posts = (user: User) => {
     const lowercaseInput = filterInput.toLowerCase();
     switch (filterType) {
       case ('Keyword'): return posts.filter((post) => post.body.toLowerCase().includes(lowercaseInput));
-      case ('Author'): return posts.filter((post) => post.author.toLowerCase().includes(lowercaseInput));
+      case ('Author'): return posts.filter((post) => post.authorName.toLowerCase().includes(lowercaseInput));
       case ('Tag'): return posts.filter((post) => post.tags.map((tag) => tag.toLowerCase()).includes(lowercaseInput));
       default: return posts;
     }
@@ -69,7 +72,7 @@ const Posts = (user: User) => {
         <Grid container spacing={2} justify="space-between" alignItems="center">
           <Grid item xs={9}>
             <h1>CUBlogs</h1>
-            <button id="sign-out-button" onClick={() => {
+            <button onClick={() => {
               firebase.auth().signOut().then(function () {
                 // Sign-out successful.
               }).catch(function (error) {
@@ -91,7 +94,7 @@ const Posts = (user: User) => {
             : <p>Viewing all posts</p>}
         </div>
         <div className="posts">
-          {filterPosts().map((post) => <Post key={post.id} {...post} canInteract={true} user={user} />)}
+          {filterPosts().map((post) => <Post key={post.id} {...post} canInteract={true} />)}
         </div>
       </div>
       <CreatePost isOpen={createDialogOpen} setOpen={setCreateDialogOpen} addPost={addPost} user={user}></CreatePost>

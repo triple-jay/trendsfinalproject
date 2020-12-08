@@ -54,7 +54,7 @@ const CreatePost = ({ isOpen, setOpen, addPost, user }: CreatePostProps) => {
 
   const postInfo = {
     title: title,
-    author: user.firstName + ' ' + user.lastName,
+    authorName: user.firstName + ' ' + user.lastName,
     dateTime: new Date(),
     body: body,
     tags: tags,
@@ -91,7 +91,7 @@ const CreatePost = ({ isOpen, setOpen, addPost, user }: CreatePostProps) => {
         <Grid item xs={6}>
           <button id="create-button" onClick={() => {
             postInfo.canInteract = true;
-            addPost({...postInfo, user});
+            addPost({ ...postInfo, user });
             clearInputs();
             setOpen(false);
           }}>Create</button>

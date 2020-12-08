@@ -19,7 +19,7 @@ type User = {
 
 type PostProps = {
   title: string,
-  author: string,
+  authorName: string,
   dateTime: Date,
   body: string,
   tags: string[],
@@ -29,46 +29,48 @@ type PostProps = {
   id?: string
 }
 
-const Post = ({ title, author, dateTime, body, tags, upvotes, canInteract, user, id }: PostProps) => {
+const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, user, id }: PostProps) => {
 
   const [upvoted, setUpvoted] = useState(user.upvotedPostIDs ? user.upvotedPostIDs.includes(id as string) : false);
-  const [downvoted, setDownvoted] = useState(user.downvotedPostIDs ? user.upvotedPostIDs.includes(id as string) : false);
+  const [downvoted, setDownvoted] = useState(user.downvotedPostIDs ? user.downvotedPostIDs.includes(id as string) : false);
   const [numUpvotes, setNumUpvotes] = useState(upvotes);
 
   const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   const timeOptions = { hour: 'numeric', minute: 'numeric' };
 
-  useEffect(() => {
-    axios.post('/post/' + id, {upvotes: numUpvotes}).catch((error) => {
-      console.log(error.message);
-    });
-  }, [numUpvotes]);
+  /*useEffect(() => {
+    if (canInteract) {
+      axios.post('/post/' + id, { upvotes: numUpvotes }).catch((error) => {
+        console.log(error.message);
+      });
+    }
+  }, [numUpvotes]);*/
 
   const upvote = () => {
     setDownvoted(false);
     setUpvoted(!upvoted);
-    axios.post(`/upvotePost?uid=${user.uid}?postid=${id}`)
-          .then(res => res.data as number)
-          .then(newcount => setNumUpvotes(numUpvotes + newcount))
-          .catch((error) => {
-            console.log(error.message);
-    });
+    axios.post(`/upvotePost?uid=${user.uid}&postid=${id}`)
+      .then(res => res.data)
+      .then(data => setNumUpvotes(numUpvotes + data.change))
+      .catch((error) => {
+        console.log(error.message);
+      });
   }
 
   const downvote = () => {
     setUpvoted(false);
     setDownvoted(!downvoted);
-    axios.post(`/upvotePost?uid=${user.uid}?postid=${id}`)
-          .then(res => res.data as number)
-          .then(newcount => setNumUpvotes(numUpvotes + newcount))
-          .catch((error) => {
-            console.log(error.message);
-    });
+    axios.post(`/downvotePost?uid=${user.uid}&postid=${id}`)
+      .then(res => res.data)
+      .then(data => setNumUpvotes(numUpvotes + data.change))
+      .catch((error) => {
+        console.log(error.message);
+      });
   }
 
   return <Card style={{ padding: 24, borderRadius: 20, marginBottom: 24 }}>
     <h2 id="post-title">{title}</h2>
-    <em id="post-info">Posted by <strong>{author}</strong> on <strong>{new Date(dateTime).toLocaleDateString("en-US", dateOptions)}</strong> at <strong>{new Date(dateTime).toLocaleTimeString("en-US", timeOptions)}</strong></em>
+    <em id="post-info">Posted by <strong>{authorName}</strong> on <strong>{new Date(dateTime).toLocaleDateString("en-US", dateOptions)}</strong> at <strong>{new Date(dateTime).toLocaleTimeString("en-US", timeOptions)}</strong></em>
     <p id="post-body">{body}</p>
     <Grid
       container
