@@ -90,12 +90,63 @@ app.post('/createUser', async (req, res) => {
     res.send(uid);
 });
 
-app.get('/getUser/:uid', async (req, res) => {
-    const uid = req.params.uid;
+app.get('/getUser/', async (req, res) => {
+    const uid = req.query.uid as string;
     const userDoc = await usersCollection.doc(uid).get();
-    const user = userDoc.data;
+    const user = userDoc.data() as User;
     res.send({ ...user, uid });
-    console.log({ ...user, uid });
+});
+
+app.post('/downvotePost', async (req, res) => {
+    let change: number = 0
+    const uid = req.query.uid as string;
+    const postid = req.query.postid as string;
+    const userDoc = await usersCollection.doc(uid).get();
+    const user = userDoc.data() as User;
+    const upvotedPosts = user.upvotedPostIDs;
+    const downvotedPosts = user.downvotedPostIDs;
+    const postIndex = downvotedPosts ? downvotedPosts.findIndex(id => postid === id) : -1;
+    const removeFromIndex = upvotedPosts ? upvotedPosts.findIndex(id => postid === id) : -1;
+    if (postIndex !== -1) {
+        downvotedPosts.splice(postIndex, 1);
+        change += 1;
+    } else {
+        downvotedPosts.push(postid);
+        change -= 1;
+        if (removeFromIndex !== -1) {
+            upvotedPosts.splice(removeFromIndex, 1);
+            change -= 1;
+        };
+    }
+    const update = { downvotedPostIDs: downvotedPosts, upvotedPostIDs: upvotedPosts }
+    await usersCollection.doc(uid as string).update(update);
+    res.send(change);
+});
+
+app.post('/upvotePost', async (req, res) => {
+    let change: number = 0;
+    const uid = req.query.uid as string;
+    const postid = req.query.postid as string;
+    const userDoc = await usersCollection.doc(uid).get();
+    const user = userDoc.data() as User;
+    const upvotedPosts = user.upvotedPostIDs;
+    const downvotedPosts = user.downvotedPostIDs;
+    const postIndex = upvotedPosts ? upvotedPosts.findIndex(id => postid === id) : -1;
+    const removeFromIndex = downvotedPosts ? downvotedPosts.findIndex(id => postid === id) : -1;
+    if (postIndex !== -1) {
+        upvotedPosts.splice(postIndex, 1);
+        change -= 1;
+    } else {
+        upvotedPosts.push(postid);
+        change += 1;
+        if (removeFromIndex !== -1) {
+            downvotedPosts.splice(removeFromIndex, 1);
+            change += 1;
+        };
+    }
+    const update = { downvotedPostIDs: downvotedPosts, upvotedPostIDs: upvotedPosts }
+    await usersCollection.doc(uid as string).update(update);
+    res.send(change);
 });
 
 app.listen(8080, () => console.log('Server started!'));

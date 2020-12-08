@@ -69,7 +69,7 @@ const Posts = (user: User) => {
         <Grid container spacing={2} justify="space-between" alignItems="center">
           <Grid item xs={9}>
             <h1>CUBlogs</h1>
-            <button onClick={() => {
+            <button id="sign-out-button" onClick={() => {
               firebase.auth().signOut().then(function () {
                 // Sign-out successful.
               }).catch(function (error) {
@@ -91,7 +91,7 @@ const Posts = (user: User) => {
             : <p>Viewing all posts</p>}
         </div>
         <div className="posts">
-          {filterPosts().map((post) => <Post key={post.id} {...post} canInteract={true} />)}
+          {filterPosts().map((post) => <Post key={post.id} {...post} canInteract={true} user={user} />)}
         </div>
       </div>
       <CreatePost isOpen={createDialogOpen} setOpen={setCreateDialogOpen} addPost={addPost} user={user}></CreatePost>

@@ -80,7 +80,7 @@ const CreatePost = ({ isOpen, setOpen, addPost, user }: CreatePostProps) => {
         </Grid>
       </Grid>
       <h2>Preview</h2>
-      <Post {...postInfo}></Post>
+      <Post {...postInfo} user={user}></Post>
       <Grid container spacing={1} alignItems="baseline">
         <Grid item xs={6}>
           <button id="cancel-button" onClick={() => {
@@ -91,7 +91,7 @@ const CreatePost = ({ isOpen, setOpen, addPost, user }: CreatePostProps) => {
         <Grid item xs={6}>
           <button id="create-button" onClick={() => {
             postInfo.canInteract = true;
-            addPost(postInfo);
+            addPost({...postInfo, user});
             clearInputs();
             setOpen(false);
           }}>Create</button>

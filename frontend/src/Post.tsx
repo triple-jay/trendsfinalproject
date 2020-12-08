@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -6,6 +6,16 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import TagButton from './TagButton';
 import Grid from '@material-ui/core/Grid';
 import './Post.css';
+import axios from 'axios';
+
+type User = {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  upvotedPostIDs: string[];
+  downvotedPostIDs: string[];
+  postIDs: string[];
+}
 
 type PostProps = {
   title: string,
@@ -15,38 +25,45 @@ type PostProps = {
   tags: string[],
   upvotes: number,
   canInteract: boolean,
+  user: User,
   id?: string
 }
 
-const Post = ({ title, author, dateTime, body, tags, upvotes, canInteract }: PostProps) => {
+const Post = ({ title, author, dateTime, body, tags, upvotes, canInteract, user, id }: PostProps) => {
 
-  const [upvoted, setUpvoted] = useState(false);
-  const [downvoted, setDownvoted] = useState(false);
+  const [upvoted, setUpvoted] = useState(user.upvotedPostIDs ? user.upvotedPostIDs.includes(id as string) : false);
+  const [downvoted, setDownvoted] = useState(user.downvotedPostIDs ? user.upvotedPostIDs.includes(id as string) : false);
   const [numUpvotes, setNumUpvotes] = useState(upvotes);
 
   const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   const timeOptions = { hour: 'numeric', minute: 'numeric' };
 
+  useEffect(() => {
+    axios.post('/post/' + id, {upvotes: numUpvotes}).catch((error) => {
+      console.log(error.message);
+    });
+  }, [numUpvotes]);
+
   const upvote = () => {
     setDownvoted(false);
-    if (upvoted) {
-      setNumUpvotes(upvotes);
-    }
-    else {
-      setNumUpvotes(upvotes + 1);
-    }
     setUpvoted(!upvoted);
+    axios.post(`/upvotePost?uid=${user.uid}?postid=${id}`)
+          .then(res => res.data as number)
+          .then(newcount => setNumUpvotes(numUpvotes + newcount))
+          .catch((error) => {
+            console.log(error.message);
+    });
   }
 
   const downvote = () => {
     setUpvoted(false);
-    if (downvoted) {
-      setNumUpvotes(upvotes);
-    }
-    else {
-      setNumUpvotes(upvotes - 1);
-    }
     setDownvoted(!downvoted);
+    axios.post(`/upvotePost?uid=${user.uid}?postid=${id}`)
+          .then(res => res.data as number)
+          .then(newcount => setNumUpvotes(numUpvotes + newcount))
+          .catch((error) => {
+            console.log(error.message);
+    });
   }
 
   return <Card style={{ padding: 24, borderRadius: 20, marginBottom: 24 }}>

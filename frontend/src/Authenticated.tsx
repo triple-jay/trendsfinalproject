@@ -35,7 +35,8 @@ const Authenticated = () => {
   function onAuthStateChange() {
     return firebase.auth().onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser !== null) {
-        const user = await axios.get<User>('/getUser/' + firebaseUser.uid);
+        console.log(firebaseUser.uid);
+        const user = await axios.get<User>(`/getUser?uid=${firebaseUser.uid}`);
         setUser(user.data);
       }
       else {
@@ -64,9 +65,8 @@ const Authenticated = () => {
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then(async (userCreds) => {
         if (userCreds.user !== null) {
-          const user = await axios.get<User>('/getUser/' + userCreds.user.uid);
+          const user = await axios.get<User>(`/getUser?uid=${userCreds.user.uid}`);
           setUser(user.data);
-          console.log(user.data);
         }
 
       })
