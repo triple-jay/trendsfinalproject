@@ -12,9 +12,10 @@ type CreatePostProps = {
   isOpen: boolean,
   setOpen: (open: boolean) => void,
   addPost: (post: PostProps) => void,
-  user: User
+  user: User,
 }
-const CreatePost = ({ isOpen, setOpen, addPost, user }: CreatePostProps) => {
+
+const CreatePost = ({ isOpen, setOpen, addPost, user}: CreatePostProps) => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -91,7 +92,7 @@ const CreatePost = ({ isOpen, setOpen, addPost, user }: CreatePostProps) => {
         <Grid item xs={6}>
           <button id="create-button" onClick={() => {
             postInfo.canInteract = true;
-            addPost({ ...postInfo, user });
+            addPost({ ...postInfo, user});
             clearInputs();
             setOpen(false);
           }}>Create</button>
