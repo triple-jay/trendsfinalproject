@@ -26,10 +26,13 @@ type PostProps = {
   upvotes: number,
   canInteract: boolean,
   user: User,
-  id?: string
+  id?: string,
+  upvotePost?: (postid: string) => void,
+  downvotePost?: (postid: string) => void
 }
 
-const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, user, id }: PostProps) => {
+const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, user, id , 
+  upvotePost, downvotePost}: PostProps) => {
 
   const [upvoted, setUpvoted] = useState(user.upvotedPostIDs ? user.upvotedPostIDs.includes(id as string) : false);
   const [downvoted, setDownvoted] = useState(user.downvotedPostIDs ? user.downvotedPostIDs.includes(id as string) : false);
@@ -39,18 +42,11 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
   const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   const timeOptions = { hour: 'numeric', minute: 'numeric' };
 
-  /*useEffect(() => {
-    if (canInteract) {
-      axios.post('/post/' + id, { upvotes: numUpvotes }).catch((error) => {
-        console.log(error.message);
-      });
-    }
-  }, [numUpvotes]);*/
-
   const upvote = () => {
     setDownvoted(false);
     setUpvoted(!upvoted);
     setDisableVote(true);
+    if (upvotePost) upvotePost(id as string);
     axios.post(`/upvotePost?uid=${user.uid}&postid=${id}`)
       .then(res => res.data)
       .then(data => {
@@ -66,6 +62,7 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
     setUpvoted(false);
     setDownvoted(!downvoted);
     setDisableVote(true);
+    if (downvotePost) downvotePost(id as string);
     axios.post(`/downvotePost?uid=${user.uid}&postid=${id}`)
       .then(res => res.data)
       .then(data => {
