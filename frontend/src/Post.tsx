@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -25,11 +25,12 @@ type PostProps = {
   tags: string[],
   upvotes: number,
   canInteract: boolean,
+  updateVote: (postID: string, vote: number) => void,
   user: User,
   id?: string
 }
 
-const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, user, id }: PostProps) => {
+const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, user, updateVote, id }: PostProps) => {
 
   const [upvoted, setUpvoted] = useState(user.upvotedPostIDs ? user.upvotedPostIDs.includes(id as string) : false);
   const [downvoted, setDownvoted] = useState(user.downvotedPostIDs ? user.downvotedPostIDs.includes(id as string) : false);
@@ -55,6 +56,7 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
       .then(res => res.data)
       .then(data => {
         setNumUpvotes(numUpvotes + data.change);
+        updateVote(id as string, upvoted ? 1 : 0);
         setDisableVote(false);
       })
       .catch((error) => {
@@ -70,6 +72,7 @@ const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, u
       .then(res => res.data)
       .then(data => {
         setNumUpvotes(numUpvotes + data.change);
+        updateVote(id as string, upvoted ? 1 : 0);
         setDisableVote(false);
       })
       .catch((error) => {

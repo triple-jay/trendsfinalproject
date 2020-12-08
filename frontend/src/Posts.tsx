@@ -31,19 +31,31 @@ const Posts = (user: User) => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const [posts, setPosts] = useState<PostWithID[]>([]);
+  const [userVote, setUserVote] = useState<Map<string, number>>(new Map());
 
   const getPosts: () => void = async () => {
     const posts = await axios.get<PostWithID[]>('/getPosts');
-    setPosts(posts.data.map((post) => ({ ...post, user, canInteract: true })));
+    let userVoteInit = new Map();
+    posts.data.forEach((post) => {
+      userVoteInit.set(post.id, user.upvotedPostIDs.includes(post.id) ? 1 : user.downvotedPostIDs.includes(post.id) ? -1 : 0);
+    })
+    setPosts(posts.data.map((post) => {
+      return ({ ...post, user, canInteract: true });
+    }));
+
   }
 
-  useEffect(() => getPosts());
+  useEffect(() => getPosts(), []);
 
   const addPost = (post: PostProps) => {
     const { authorName, canInteract, ...postInfo } = post;
     axios.post('/createPost', postInfo)
       .then(res => res.data)
       .then(id => setPosts([...posts, { ...post, id, user, canInteract: true }]));
+  }
+
+  const updateVote = (postID: string, vote: number) => {
+    // UPDATE USERVOTE MAP
   }
 
   const filterPosts = () => {
@@ -55,8 +67,8 @@ const Posts = (user: User) => {
       case ('Keyword'): return posts.filter((post) => post.body.toLowerCase().includes(lowercaseInput));
       case ('Author'): return posts.filter((post) => post.authorName.toLowerCase().includes(lowercaseInput));
       case ('Tag'): return posts.filter((post) => post.tags.map((tag) => tag.toLowerCase()).includes(lowercaseInput));
-      case ('Upvoted'): return posts.filter((post) => user.upvotedPostIDs.includes(post.id));
-      case ('Downvoted'): return posts.filter((post) => user.downvotedPostIDs.includes(post.id));
+      case ('Upvoted'): return posts.filter((post) => user.upvotedPostIDs.indexOf(post.id) !== -1);
+      case ('Downvoted'): return posts.filter((post) => user.downvotedPostIDs.indexOf(post.id) !== -1);
       default: return posts;
     }
   }
@@ -86,7 +98,7 @@ const Posts = (user: User) => {
         </Grid>
         <div className="search">
           <Search setFilterType={(newType: SearchType) => setFilterType(newType)} setFilterInput={(newInput: string) => setFilterInput(newInput)}></Search>
-          {filterInput || filterType === "Upvoted" || filterType === "Downvoted" ?
+          {filterInput ?
             <div>
               <p style={{ display: "inline-block" }}>{"Filtered by " + (filterType === "Upvoted" || filterType === "Downvoted" ? "posts you've " + filterType.toLowerCase() : filterType.toLowerCase() + ": " + filterInput)}</p>
               <p style={{ display: "inline-block" }} id="clear-button" onClick={clearFilter}>Clear filter</p>
@@ -97,7 +109,7 @@ const Posts = (user: User) => {
           {filterPosts().map((post) => <Post key={post.id} {...post} canInteract={true} />)}
         </div>
       </div>
-      <CreatePost isOpen={createDialogOpen} setOpen={setCreateDialogOpen} addPost={addPost} user={user}></CreatePost>
+      <CreatePost isOpen={createDialogOpen} setOpen={setCreateDialogOpen} addPost={addPost} user={user} updateVote={updateVote}></CreatePost>
     </ThemeProvider>
   );
 }
