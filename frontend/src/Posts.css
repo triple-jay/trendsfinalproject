@@ -58,7 +58,7 @@ h1 {
   box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
 }
 
-#new-post-button {
+#new-post-button, #sign-out-button {
   background-color: #1ad4e0;
   color: white;
   padding: 16px;
@@ -70,11 +70,3 @@ h1 {
   box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
 }
 
-#sign-out-button {
-  background-color: #2e23ad;
-  color: white;
-  cursor: pointer;
-  border-radius: 4px;
-  outline: none;
-  border: none;
-}

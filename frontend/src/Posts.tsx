@@ -6,7 +6,6 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import CreatePost from './CreatePost';
 import axios from 'axios';
-import firebase from 'firebase';
 import { User } from './Authenticated';
 
 const theme = createMuiTheme({
@@ -102,13 +101,6 @@ const Posts = (user: User) => {
         <Grid container spacing={2} justify="space-between" alignItems="center">
           <Grid item xs={9}>
             <h1>CUBlogs</h1>
-            <button onClick={() => {
-              firebase.auth().signOut().then(function () {
-                // Sign-out successful.
-              }).catch(function (error) {
-                // An error happened.
-              });
-            }}>Sign out</button>
           </Grid>
           <Grid item xs={3}>
             <button id="new-post-button" onClick={() => setCreateDialogOpen(true)}>+ Create post</button>

@@ -12,7 +12,7 @@ admin.initializeApp({
 
 const app = express();
 app.use(cors());
-//app.use(express.static(path.join(__dirname, '../frontend/build')));
+app.use(express.static(path.join(__dirname, '../frontend/build')));
 app.use(express.json());
 const db = admin.firestore();
 
@@ -167,4 +167,4 @@ app.post('/upvotePost', async (req, res) => {
     res.send({ change: change });
 });
 
-app.listen(8080, () => console.log('Server started!'));
+app.listen(process.env.PORT || 8080, () => console.log('Server started!'));

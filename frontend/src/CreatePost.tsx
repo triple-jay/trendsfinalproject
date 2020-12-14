@@ -15,18 +15,32 @@ type CreatePostProps = {
   user: User,
 }
 
-const CreatePost = ({ isOpen, setOpen, addPost, user}: CreatePostProps) => {
+const CreatePost = ({ isOpen, setOpen, addPost, user }: CreatePostProps) => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [titleErrorText, setTitleErrorText] = useState("Don't forget a title!");
+  const [bodyErrorText, setBodyErrorText] = useState("Don't forget a post body!");
 
   const updateTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
+    if (event.target.value.length === 0) {
+      setTitleErrorText('Please add a title!');
+    }
+    else {
+      setTitleErrorText('');
+    }
   }
 
   const updateBody = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBody(event.target.value);
+    if (event.target.value.length === 0) {
+      setBodyErrorText('Please add a post body!');
+    }
+    else {
+      setBodyErrorText('');
+    }
   }
 
   const updateTagInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,8 +82,10 @@ const CreatePost = ({ isOpen, setOpen, addPost, user}: CreatePostProps) => {
       <h1>Create a new post</h1>
       <h2>Title</h2>
       <input value={title} className="input-box" onChange={updateTitle}></input>
+      <p className="error-text">{titleErrorText}</p>
       <h2>Body</h2>
       <TextareaAutosize className="input-box" value={body} onChange={updateBody} />
+      <p className="error-text">{bodyErrorText}</p>
       <h2>Tags</h2>
       {tags.length === 0 ? <p>No tags yet!</p> : tags.map((tag) => <TagDeletable tag={tag} handleDelete={deleteTag}></TagDeletable>)}
       <Grid container spacing={1} alignItems="baseline">
@@ -91,10 +107,12 @@ const CreatePost = ({ isOpen, setOpen, addPost, user}: CreatePostProps) => {
         </Grid>
         <Grid item xs={6}>
           <button id="create-button" onClick={() => {
-            postInfo.canInteract = true;
-            addPost({ ...postInfo, user});
-            clearInputs();
-            setOpen(false);
+            if (title.length > 0 && body.length > 0) {
+              postInfo.canInteract = true;
+              addPost({ ...postInfo, user });
+              clearInputs();
+              setOpen(false);
+            }
           }}>Create</button>
         </Grid>
       </Grid>

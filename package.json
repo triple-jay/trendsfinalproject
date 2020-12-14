@@ -1,7 +1,17 @@
 {
+  "name": "cublogs",
   "private": true,
+  "scripts": {
+    "heroku-postbuild": "yarn workspaces run build"
+  },
   "workspaces": [
-    "frontend",
-    "backend"
-  ]
+    "backend",
+    "frontend"
+  ],
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "heroku": "^7.47.3"
+  }
 }

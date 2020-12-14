@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Card from '@material-ui/core/Card';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -31,8 +31,8 @@ type PostProps = {
   downvotePost?: (postid: string) => void
 }
 
-const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, user, id , 
-  upvotePost, downvotePost}: PostProps) => {
+const Post = ({ title, authorName, dateTime, body, tags, upvotes, canInteract, user, id,
+  upvotePost, downvotePost }: PostProps) => {
 
   const [upvoted, setUpvoted] = useState(user.upvotedPostIDs ? user.upvotedPostIDs.includes(id as string) : false);
   const [downvoted, setDownvoted] = useState(user.downvotedPostIDs ? user.downvotedPostIDs.includes(id as string) : false);
