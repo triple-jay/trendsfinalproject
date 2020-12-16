@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
-import { TextField, Button, InputAdornment } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import { TextField, Button } from '@material-ui/core';
 import './Login.css';
 
 type LoginProps = {
@@ -42,7 +40,9 @@ const Login = ({ callback }: LoginProps) => {
             <Button
                 variant="contained"
                 className="LoginButton"
-                onClick={() => callback(email, password)}
+                onClick={() => {
+                    callback(email, password)
+                }}
                 color="primary"
             >
                 Login

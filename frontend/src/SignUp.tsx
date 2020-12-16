@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
-import { TextField, Button, InputAdornment } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import { TextField, Button } from '@material-ui/core';
+import Snackbar from '@material-ui/core/Snackbar';
 
 type SignUpProps = {
     callback: (email: string, password: string, firstName: string, lastName: string) => void;
@@ -13,6 +12,8 @@ const SignUp = ({ callback }: SignUpProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordRepeat, setPasswordRepeat] = useState('');
+    const [message, setMessage] = useState('');
+    const [snackBarOpen, setSnackBarOpen] = useState(false);
 
     const onChangeFirstName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFirstName(event.target.value);
@@ -31,7 +32,15 @@ const SignUp = ({ callback }: SignUpProps) => {
     }
 
     const trySignUp = () => {
-        if (password === passwordRepeat) {
+        if (firstName.length === 0 || lastName.length === 0) {
+            setMessage('Please enter your first and last name!');
+            setSnackBarOpen(true);
+        }
+        else if (email.length === 0 || password.length === 0) {
+            setMessage('Please enter your email address and password!');
+            setSnackBarOpen(true);
+        }
+        else if (password === passwordRepeat) {
             callback(email, password, firstName, lastName);
         }
     }
@@ -68,8 +77,8 @@ const SignUp = ({ callback }: SignUpProps) => {
                 label="Password"
                 value={password}
                 onChange={onChangePassword}
-                error={password.length < 6}
-                helperText={password.length < 6 ? "Password must be at least 6 characters" : ""}
+                error={password.length > 0 && password.length < 6}
+                helperText={password.length > 0 && password.length < 6 ? "Password must be at least 6 characters" : ""}
                 type="password"
                 variant="outlined"
                 inputProps={{ style: { textAlign: 'center' } }}
@@ -89,12 +98,19 @@ const SignUp = ({ callback }: SignUpProps) => {
             <Button
                 variant="contained"
                 className="LoginButton"
-                onClick={() => trySignUp()}
+                onClick={trySignUp}
                 color="primary"
             >
                 Sign Up
             </Button>
             <br />
+            <Button color="primary" href="/">Already have an account? Login</Button>
+            <Snackbar
+                message={message}
+                open={snackBarOpen}
+                autoHideDuration={5000}
+                onClose={() => setSnackBarOpen(false)}
+            />
         </div>
     );
 }

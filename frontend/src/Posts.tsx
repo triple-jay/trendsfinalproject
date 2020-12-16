@@ -76,12 +76,12 @@ const Posts = (user: User) => {
   }
 
   const filterPosts = () => {
-    if (filterInput === '') {
+    if (filterType === 'None') {
       return posts;
     }
     const lowercaseInput = filterInput.toLowerCase();
     switch (filterType) {
-      case ('Keyword'): return posts.filter((post) => post.body.toLowerCase().includes(lowercaseInput));
+      case ('Keyword'): return posts.filter((post) => post.title.toLowerCase().includes(lowercaseInput) || post.body.toLowerCase().includes(lowercaseInput));
       case ('Author'): return posts.filter((post) => post.authorName.toLowerCase().includes(lowercaseInput));
       case ('Tag'): return posts.filter((post) => post.tags.map((tag) => tag.toLowerCase()).includes(lowercaseInput));
       case ('Upvoted'): return posts.filter((post) => upvotedPosts.includes(post.id));
@@ -91,7 +91,7 @@ const Posts = (user: User) => {
   }
 
   const clearFilter = () => {
-    setFilterType('Keyword');
+    setFilterType('None');
     setFilterInput('');
   }
 
@@ -108,12 +108,17 @@ const Posts = (user: User) => {
         </Grid>
         <div className="search">
           <Search setFilterType={(newType: SearchType) => setFilterType(newType)} setFilterInput={(newInput: string) => setFilterInput(newInput)}></Search>
-          {filterInput ?
+          {(filterType === "Upvoted" || filterType === "Downvoted") ?
             <div>
-              <p style={{ display: "inline-block" }}>{"Filtered by " + (filterType === "Upvoted" || filterType === "Downvoted" ? "posts you've " + filterType.toLowerCase() : filterType.toLowerCase() + ": " + filterInput)}</p>
+              <p style={{ display: "inline-block" }}>{"Filtered by posts you've " + filterType.toLowerCase()}</p>
               <p style={{ display: "inline-block" }} id="clear-button" onClick={clearFilter}>Clear filter</p>
             </div>
-            : <p>Viewing all posts</p>}
+            : filterInput ?
+              <div>
+                <p style={{ display: "inline-block" }}>{"Filtered by " + filterType.toLowerCase() + ": " + filterInput}</p>
+                <p style={{ display: "inline-block" }} id="clear-button" onClick={clearFilter}>Clear filter</p>
+              </div>
+              : <p>Viewing all posts</p>}
         </div>
         <div className="posts">
           {filterPosts().map((post) => <Post key={post.id} {...post} canInteract={true} upvotePost={upvotePost} downvotePost={downvotePost} />)}

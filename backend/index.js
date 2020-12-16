@@ -147,4 +147,5 @@ app.post('/upvotePost', (req, res) => __awaiter(void 0, void 0, void 0, function
     yield postsCollection.doc(postid).update({ upvotes: post.upvotes + change });
     res.send({ change: change });
 }));
+app.get('*', (_, response) => response.sendFile(path_1.default.join(__dirname, '..frontend/build/index.html')));
 app.listen(process.env.PORT || 8080, () => console.log('Server started!'));
